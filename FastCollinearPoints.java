@@ -22,18 +22,27 @@ public class FastCollinearPoints {
         ArrayList<LineSegment> segmentsList = new ArrayList<>();
         LinkedList<Point> pointList = new LinkedList<>();
         for (int i = 0; i < sorted.length; i++) {
+            // Re-sort the array after  sorted by slope order
             Arrays.sort(sorted);
+            // Each point will sort by its slope order
             Arrays.sort(sorted, sorted[i].slopeOrder());
+            // Origin of line segment will always be sorted to be the first element in the array (case x == x and y == y return NegativeInfinity)
             Point origin = sorted[0];
             for (int j = 0; j < sorted.length - 1; j++) {
                 pointList.add(sorted[j]);
-                while (j + 1 < sorted.length && origin.slopeTo(sorted[j]) == origin.slopeTo(sorted[j + 1])) {
+
+                // Continuously add any point that have the same slope to the origin point
+                while (j + 1 < sorted.length && origin.slopeTo(sorted[j]) == origin
+                        .slopeTo(sorted[j + 1])) {
                     pointList.add(sorted[++j]);
                 }
-                if (pointList.size() >= 3 && origin.compareTo(pointList.get(0)) < 0) {
-                    LineSegment lineSegment = new LineSegment(origin, pointList.get(pointList.size() - 1));
-                    segmentsList.add(lineSegment);
+
+                // 3 or points will form a line and the first point in the list should be the origin
+                if (pointList.size() >= 3 && origin.compareTo(pointList.getFirst()) < 0) {
+                    segmentsList.add(new LineSegment(origin, pointList.getLast()));
                 }
+                // Clear all the points after forming a line segment.
+                // Since the array of points is sorted in ascending order, no more points will have the same slope
                 pointList.clear();
             }
         }
